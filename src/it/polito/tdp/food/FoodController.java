@@ -46,6 +46,14 @@ public class FoodController {
 
     @FXML
     void doCalcolaDieta(ActionEvent event) {
+    	txtResult.clear();
+    	Condiment condiment = boxIngrediente.getValue();
+    	List<Condiment> dieta = new ArrayList<>();
+    	dieta = model.creaDieta(condiment);
+    	txtResult.appendText("Insieme di ingredienti per una dieta equilibrata\n");
+    	for(Condiment c: dieta) {
+    		txtResult.appendText(c.toString()+ "\n");
+    	}
 
     }
 

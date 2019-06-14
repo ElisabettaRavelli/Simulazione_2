@@ -19,6 +19,8 @@ public class Model {
 	private FoodDao dao;
 	private Graph<Condiment, DefaultWeightedEdge> grafo;
 	private List<Condiment> ingredienti;
+	private List<Condiment> soluzioneRicorsiva;
+	private Double calorieMax = 0.0;
 	
 	public Model() {
 		this.dao = new FoodDao();
@@ -78,5 +80,60 @@ public class Model {
 		list = this.dao.listIngredienti(calorie);
 		Collections.sort(list);
 		return list;
+	}
+	
+	/*
+	 * RICORSIONE
+	 * Soluzione parziale: lista di ingredienti (Condiment)
+	 * Livello ricorsione: numero calorie del Condiment
+	 * Casi terminali: non c'è un ingrediente con un numero massimo si calorie 
+	 */
+	
+	public List<Condiment> creaDieta(Condiment condiment){
+		List<Condiment> parziale = new ArrayList<>();
+		this.soluzioneRicorsiva = new ArrayList<>();
+		
+		//valori iniziali di partenza (livello 0)
+		calorieMax = condiment.getCondiment_calories();
+		parziale.add(condiment);
+		
+		cerca(condiment, parziale);
+		
+		return soluzioneRicorsiva;
+	}
+	
+	public void cerca(Condiment condiment, List<Condiment> parziale) {
+		//algoritmo ricorsivo
+		for(Condiment c: grafo.vertexSet()) {
+			if(!parziale.contains(c)&& nonContieneArco(parziale, c)) {
+				parziale.add(c);
+				cerca(c,parziale);
+				parziale.remove(c);
+			}
+		}
+		//condizione finale
+		if(calorie(parziale) > calorieMax) {
+			calorieMax = calorie(parziale);
+			soluzioneRicorsiva = new ArrayList<>(parziale);
+		}
+	}
+	
+	//metodo che mi calcola la somma di tutte le calorie dei vertici contenuti in parziale
+	private double calorie(List<Condiment> parziale) {
+		Double somma = 0.0;
+		for(Condiment c : parziale) {
+			somma = somma + c.getCondiment_calories();
+		}
+				
+		return somma;
+	}
+
+	//metodo per dire se ci sono degli archi tra i vertici in parziale e i vertice che sto verificando (c)
+	private boolean nonContieneArco(List<Condiment> parziale, Condiment c) {
+		for(Condiment tmp : parziale) {
+			if(this.grafo.containsEdge(tmp, c) || this.grafo.containsEdge(c, tmp))
+				return false;
+		}
+		return true;
 	}
 }
