@@ -1,6 +1,7 @@
 package it.polito.tdp.food.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class Model {
 		
 		for(Condiment c1: this.grafo.vertexSet()) {
 			for(Condiment c2: this.grafo.vertexSet()) {
-				if(!c1.equals(c2)) {
+				if(!c1.equals(c2) && this.grafo.getEdge(c1, c2)==null) {
 					Double peso = this.dao.listAdiacenze(c1.getFood_code(),c2.getFood_code());
 					if(peso>0) {
 						Graphs.addEdgeWithVertices(this.grafo, c1, c2, peso);
@@ -45,5 +46,37 @@ public class Model {
 		System.out.println("vertici:  "+this.grafo.vertexSet().size()+ " archi: "+this.grafo.edgeSet().size());
 		
 		
+	}
+	
+	public Integer getVertici() {
+		return this.grafo.vertexSet().size();
+	}
+	
+	public Integer getArchi() {
+		return this.grafo.edgeSet().size();
+	}
+	
+	
+	public List<Ingrediente> getIngredienti(){
+		List<Ingrediente> result = new ArrayList<>();
+		
+		for(Condiment c: this.grafo.vertexSet()) {
+			Integer nCibo= 0;
+			List<Condiment> vicini = Graphs.neighborListOf(this.grafo, c);
+			for(Condiment tmp: vicini) {
+			nCibo= nCibo + (int)this.grafo.getEdgeWeight(this.grafo.getEdge(c, tmp));
+			}
+			Ingrediente i = new Ingrediente(c.getCondiment_id(),c.getCondiment_calories(),nCibo);
+			result.add(i);
+		}
+		Collections.sort(result);
+		return result;
+	}
+	
+	public List<Condiment> ingredientiSelezionabili(Double calorie){
+		List<Condiment> list = new ArrayList<>();
+		list = this.dao.listIngredienti(calorie);
+		Collections.sort(list);
+		return list;
 	}
 }
