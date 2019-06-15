@@ -7,6 +7,7 @@ package it.polito.tdp.food;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.food.db.Condiment;
@@ -46,14 +47,19 @@ public class FoodController {
 
     @FXML
     void doCalcolaDieta(ActionEvent event) {
-    	txtResult.clear();
-    	Condiment condiment = boxIngrediente.getValue();
-    	List<Condiment> dieta = new ArrayList<>();
-    	dieta = model.creaDieta(condiment);
-    	txtResult.appendText("Insieme di ingredienti per una dieta equilibrata\n");
-    	for(Condiment c: dieta) {
+    	try {
+    		txtResult.clear();
+    		Condiment condiment = boxIngrediente.getValue();
+    		List<Condiment> dieta = new ArrayList<>();
+    		dieta = model.creaDieta(condiment);
+    		txtResult.appendText("Insieme di ingredienti per una dieta equilibrata\n");
+    		for(Condiment c: dieta) {
     		txtResult.appendText(c.toString()+ "\n");
+    		}
+    	}catch(Exception e) {
+    		txtResult.appendText("Devi scegliere un ingrediente nel menù a tendina\n");
     	}
+    	
 
     }
 
@@ -71,10 +77,14 @@ public class FoodController {
     		for(Ingrediente tmp: ingredienti) {
     			txtResult.appendText("Nome: "+ tmp.getId()+" Calorie: "+tmp.getCalorie()+ " NumCibi: "+ tmp.getCibi()+ "\n");
     		}
+    		
     		List<Condiment> ingredientiSelezionabili = new ArrayList<>();
     		ingredientiSelezionabili = this.model.ingredientiSelezionabili(calorie);
     		boxIngrediente.getItems().clear();
     		boxIngrediente.getItems().addAll(ingredientiSelezionabili);
+    		
+    		btnDietaEquilibrata.setDisable(false);
+    		
     		
     	} catch(NumberFormatException e) {
     		txtResult.appendText("Inserire un numero reale\n");
@@ -90,7 +100,15 @@ public class FoodController {
         assert boxIngrediente != null : "fx:id=\"boxIngrediente\" was not injected: check your FXML file 'Food.fxml'.";
         assert btnDietaEquilibrata != null : "fx:id=\"btnDietaEquilibrata\" was not injected: check your FXML file 'Food.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Food.fxml'.";
+        
+        btnDietaEquilibrata.setDisable(true);
+        txtCalorie.textProperty().addListener((observable, oldValue, newvalue) -> {
+        	btnDietaEquilibrata.setDisable(true);
+        	boxIngrediente.getItems().clear();
+        });
+        
     }
+
     
     public void setModel(Model model) {
     	this.model = model;
