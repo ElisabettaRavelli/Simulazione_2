@@ -86,7 +86,7 @@ public class Model {
 	 * RICORSIONE
 	 * Soluzione parziale: lista di ingredienti (Condiment)
 	 * Livello ricorsione: numero calorie del Condiment
-	 * Casi terminali: non c'è un ingrediente con un numero massimo si calorie 
+	 * Casi terminali: non c'è un ingrediente con un numero massimo di calorie 
 	 */
 	
 	public List<Condiment> creaDieta(Condiment condiment){
